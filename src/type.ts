@@ -18,7 +18,7 @@ export interface configType {
     BCRYPT_SALT_ROUNDS: number,
 }
 
-type User = {
+export type User = {
     id: string,
     email: string,
     firstName: string,
@@ -29,13 +29,13 @@ type User = {
     microsoftId?: string
 }
 
-type JWTPayload = {
+export type JWTPayload = {
     userId: string,
     email: string,
     role: "admin" | "user"
 }
 
-type refteshToken = {
+export type RefreshToken = {
     id: string,
     userId: string,
     token: string,
