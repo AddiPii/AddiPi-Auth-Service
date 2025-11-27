@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 import { refreshTokensContainer } from "./containers";
 
 
-function generateAccessToken(user: User): string{
+export function generateAccessToken(user: User): string{
     const payload: JWTPayload = {
         userId: user.id,
         email: user.email,
@@ -14,11 +14,11 @@ function generateAccessToken(user: User): string{
     return jwt.sign(payload, CONFIG.JWT_SECRET, { expiresIn: '15m' })
 }
 
-function generateRefreshToken(user: User): string {
+export function generateRefreshToken(user: User): string {
     return jwt.sign({userId: user.id}, CONFIG.JWT_REFRESH_SECRET, { expiresIn: '7d' })
 }
 
-async function storeRefreshToken(userId:string, token: string): Promise<void> {
+export async function storeRefreshToken(userId:string, token: string): Promise<void> {
     const refreshToken: RefreshToken = {
         id: `${userId}_${Date.now()}`,
         userId,
@@ -29,7 +29,7 @@ async function storeRefreshToken(userId:string, token: string): Promise<void> {
     await refreshTokensContainer.items.create(refreshToken)
 }
 
-async function validateRefreshToken(token: string): Promise<string | null> {
+export async function validateRefreshToken(token: string): Promise<string | null> {
     try {
         const decoded = jwt.verify(token, CONFIG.JWT_REFRESH_SECRET) as { userId: string }
         const query = `SELECT * FROM c WHERE c.token = @token AND c.userId = @userId AND c.expiresAt > @now`
@@ -48,7 +48,7 @@ async function validateRefreshToken(token: string): Promise<string | null> {
     }
 }
 
-async function revokeRefreshToken(token: string): Promise<void> {
+export async function revokeRefreshToken(token: string): Promise<void> {
     const query = `SELECT * FROM c WHERE c.token = @token`
     const { resources } = await refreshTokensContainer.items.query({
         query,
