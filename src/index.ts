@@ -1,6 +1,6 @@
 //AddiPi-Auth-Service
 import express from 'express'
-import type { Express } from 'express'
+import type { Express, Request, Response } from 'express'
 import cors from 'cors'
 import { Container, CosmosClient } from '@azure/cosmos'
 import { containersType, cosmosConnect } from './db/cosmosConnect'
@@ -31,10 +31,9 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use(cors)
 
-
-
-
-
+app.get('/health', (req: Request, res: Response<{ok: boolean}>): void => {
+    res.json({ok: true})
+})
 
 app.listen(parseInt(PORT), (): void => {
     console.log(`AddiPi Auth Service działa na porcie ${PORT}`)
