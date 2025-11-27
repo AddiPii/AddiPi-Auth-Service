@@ -3,6 +3,7 @@ import express from 'express'
 import type { Express, Request, Response } from 'express'
 import cors from 'cors'
 import { CONFIG } from './config/config'
+import { authRouter } from './routes/authRouter'
 
 const PORT = CONFIG.PORT
 
@@ -17,6 +18,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.use(cors)
+
+app.use('/auth', authRouter)
 
 app.get('/health', (req: Request, res: Response<{ok: boolean}>): void => {
     res.json({ok: true})

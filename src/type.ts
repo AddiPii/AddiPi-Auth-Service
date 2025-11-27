@@ -42,3 +42,10 @@ export type RefreshToken = {
     expiresAt: string,
     createdAt: string
 }
+
+export type RegisterReqBody = {
+    email: string, 
+    password: string, 
+    firstName: string, 
+    lastName: string
+}
