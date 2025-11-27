@@ -1,9 +1,25 @@
-export const PORT: number = Number(process.env.AUTH_PORT ?? 3001);
-export const COSMOS_ENDPOINT: string = process.env.COSMOS_ENDPOINT!;
-export const COSMOS_KEY: string = process.env.COSMOS_KEY!;
-export const JWT_SECRET: string = process.env.JWT_SECRET!;
-export const JWT_REFRESH_SECRET: string = process.env.JWT_REFRESH_SECRET!;
-export const ACCESS_TOKEN_EXPIRES: string = process.env.ACCESS_TOKEN_EXPIRES ?? '15m';
-export const REFRESH_TOKEN_EXPIRES_DAYS: number = Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS ?? 7);
-export const REFRESH_TOKEN_TTL_SECONDS:number = REFRESH_TOKEN_EXPIRES_DAYS * 24 * 60 * 60;
-export const BCRYPT_SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS ?? 10);
+import { configType } from "../type";
+
+const getRequired = (name: string) => {
+  const v = process.env[name];
+
+  if (!v) {
+    throw new Error(`Missing env var: ${name}`);
+  } 
+
+  return v;
+};
+
+const REFRESH_TOKEN_EXPIRES_DAYS = Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS ?? 7);
+
+export const CONFIG: configType = {
+    JWT_REFRESH_SECRET: getRequired('JWT_REFRESH_SECRET'),
+    JWT_SECRET: getRequired('JWT_SECRET'),
+    COSMOS_ENDPOINT: getRequired('COSMOS_ENDPOINT'),
+    COSMOS_KEY: getRequired('COSMOS_KEY'),
+    PORT: Number(process.env.AUTH_PORT || 3001),
+    ACCESS_TOKEN_EXPIRES: process.env.ACCESS_TOKEN_EXPIRES ?? '15m',
+    REFRESH_TOKEN_EXPIRES_DAYS,
+    REFRESH_TOKEN_TTL_SECONDS: REFRESH_TOKEN_EXPIRES_DAYS * 24 * 60 * 60,
+    BCRYPT_SALT_ROUNDS: Number(process.env.BCRYPT_SALT_ROUNDS ?? 10),
+};

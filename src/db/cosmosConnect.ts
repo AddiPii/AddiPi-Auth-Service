@@ -1,15 +1,9 @@
 import { CosmosClient } from "@azure/cosmos";
 import type { Container } from "@azure/cosmos";
+import { containersType } from "../type";
 
-const COSMOS_ENDPOINT = process.env.COSMOS_ENDPOINT as string;
-const COSMOS_KEY = process.env.COSMOS_KEY as string;
 
-export type containersType = {
-    usersContainer: Container,
-    refreshTokensContainer: Container
-}
-
-export function cosmosConnect(): containersType{
+export function cosmosConnect(COSMOS_ENDPOINT: string, COSMOS_KEY: string): containersType{
     const missing: string[] = [];
     if (!COSMOS_ENDPOINT) missing.push('COSMOS_ENDPOINT');
     if (!COSMOS_KEY) missing.push('COSMOS_KEY');

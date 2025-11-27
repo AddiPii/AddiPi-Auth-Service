@@ -1,0 +1,44 @@
+import type { Container } from "@azure/cosmos";
+
+
+export type containersType = {
+    usersContainer: Container,
+    refreshTokensContainer: Container
+}
+
+export interface configType {
+    JWT_REFRESH_SECRET: string,
+    JWT_SECRET: string,
+    COSMOS_ENDPOINT: string,
+    COSMOS_KEY: string,
+    PORT: number,
+    ACCESS_TOKEN_EXPIRES: string,
+    REFRESH_TOKEN_EXPIRES_DAYS: number,
+    REFRESH_TOKEN_TTL_SECONDS: number | undefined,
+    BCRYPT_SALT_ROUNDS: number,
+}
+
+type User = {
+    id: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+    password?: string,
+    role: "admin" | "user",
+    createdAt: string,
+    microsoftId?: string
+}
+
+type JWTPayload = {
+    userId: string,
+    email: string,
+    role: "admin" | "user"
+}
+
+type refteshToken = {
+    id: string,
+    userId: string,
+    token: string,
+    expiresAt: string,
+    createdAt: string
+}
