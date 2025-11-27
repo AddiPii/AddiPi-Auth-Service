@@ -23,6 +23,7 @@
   "devDependencies": {
     "@tsconfig/node22": "^22.0.5",
     "@types/express": "^5.0.5",
+    "eslint": "^9.39.1",
     "typescript": "^5.9.3"
   }
 }
