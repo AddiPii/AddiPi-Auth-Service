@@ -24,6 +24,30 @@ if (missing.length) {
 // let refreshTokensContainer: Container;
 let { usersContainer, refreshTokensContainer }: containersType = cosmosConnect()
 
+type User = {
+    id: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+    password?: string,
+    role: "admin" | "user",
+    createdAt: string,
+    microsoftId?: string
+}
+
+type JWTPayload = {
+    userId: string,
+    email: string,
+    role: "admin" | "user"
+}
+
+type refteshToken = {
+    id: string,
+    userId: string,
+    token: string,
+    expiresAt: string,
+    createdAt: string
+}
 
 app.use(express.json())
 
