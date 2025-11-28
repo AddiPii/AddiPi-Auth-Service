@@ -72,3 +72,9 @@ export const registerUser = async (
     }
 }
 
+export const loginUser = async(
+    req:Request, 
+    res: Response
+): Promise<void | Response<{error: string}>> => {
+    
+}
