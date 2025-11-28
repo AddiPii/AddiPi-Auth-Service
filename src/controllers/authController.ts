@@ -73,8 +73,54 @@ export const registerUser = async (
 }
 
 export const loginUser = async(
-    req:Request, 
-    res: Response
+    req:Request<{}, unknown, Pick<User, 'email' | 'password'>>, 
+    res: Response<RegisterResBody | {error: string}>
 ): Promise<void | Response<{error: string}>> => {
-    
+    try {
+        let { email, password }: Pick<User, 'email' | 'password'> = req.body
+
+        if (!email || !password){
+            return res.status(400).json({error: 'All fields are required'})
+        }
+
+        email = email.trim().toLowerCase()
+
+        const query = `SELECT * FROM c WHERE c.email = @email`
+        const { resources } = await usersContainer.items.query({
+            query,
+            parameters: [{name: '@email', value: email}]
+        }).fetchAll()
+
+        if (resources.length === 0){
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const user: User = resources[0]
+
+        if (!user.password){
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const isValid: boolean = await bcrypt.compare(password, user.password)
+
+        if (!isValid){
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const accessToken: string = generateAccessToken(user)
+        const refreshToken: string = generateRefreshToken(user)
+        await storeRefreshToken(user.id, refreshToken)
+
+        const { password: _, ...userWithoutPassword }: User = user
+
+        res.json({
+            user: userWithoutPassword,
+            accessToken,
+            refreshToken
+        })
+
+    } catch (err) {
+        console.error('Login error:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
 }
