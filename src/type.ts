@@ -26,6 +26,7 @@ export type User = {
     password?: string,
     role: "admin" | "user",
     createdAt: string,
+    updatedAt: string,
     microsoftId?: string
 }
 

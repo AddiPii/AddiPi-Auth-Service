@@ -1,17 +1,33 @@
 import type { Request, Response } from "express"
-import { RegisterReqBody } from "../type"
+import { RegisterReqBody, User } from "../type"
 import { usersContainer } from "../services/containers"
 import bcrypt from 'bcryptjs'
+import validator from 'validator'
+import getLocalISO from "../helpers/getLocalISO"
+import { generateAccessToken, generateRefreshToken, storeRefreshToken } from "../services/token-service"
 
 export const registerUser = async (
     req: Request<{}, unknown, RegisterReqBody>, 
     res: Response
 ): Promise<void | Response<{error: string}>> => {
     try {
-        const { email, password, firstName, lastName } = req.body
+        let { email, password, firstName, lastName } = req.body
         
         if( !email || !password || !firstName || !lastName ){
             return res.status(400).json({error: 'All fields are required'})
+        }
+        email = email.toLowerCase().trim()
+        firstName = firstName.trim()
+        lastName = lastName.trim()
+
+        if(!validator.isEmail(email)){
+            return res.status(400).json({error: 'Bad format of e-mail'})
+        }
+
+        const emailDomain = email.slice(-11)
+        
+        if(emailDomain != '@uwr.edu.pl'){
+            return res.status(400).json({error: 'Only Univeristy of Wroclaw members can use this service'})
         }
 
         const query: string = `SELECT * FROM c WHERE c.email = @email`
@@ -26,8 +42,32 @@ export const registerUser = async (
 
         const hashed: string = await bcrypt.hash(password, 10)
 
-        
-    } catch (err) {
+        const user: User = {
+            id: `user_${Date.now()}`,
+            email,
+            firstName,
+            lastName,
+            password: hashed,
+            role: 'user',
+            createdAt: getLocalISO(),
+            updatedAt: getLocalISO(),
+        }
 
+        await usersContainer.items.create(user)
+
+        const accessToken = generateAccessToken(user)
+        const refreshToken = generateRefreshToken(user)
+        await storeRefreshToken(user.id, refreshToken)
+
+        const { password: _, ...userWithoutPassword } = user
+
+        res.status(201).json({
+            user: userWithoutPassword,
+            accessToken,
+            refreshToken
+        })
+    } catch (err) {
+        console.error('Register error:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 }
