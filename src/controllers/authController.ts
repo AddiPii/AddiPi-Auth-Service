@@ -4,7 +4,8 @@ import { usersContainer } from "../services/containers"
 import bcrypt from 'bcryptjs'
 import validator from 'validator'
 import getLocalISO from "../helpers/getLocalISO"
-import { generateAccessToken, generateRefreshToken, storeRefreshToken } from "../services/token-service"
+import { generateAccessToken, generateRefreshToken, revokeRefreshToken, storeRefreshToken, validateRefreshToken } from "../services/token-service"
+import { ref } from "process"
 
 export const registerUser = async (
     req: Request<{}, unknown, RegisterReqBody>, 
@@ -72,7 +73,7 @@ export const registerUser = async (
     }
 }
 
-export const loginUser = async(
+export const loginUser = async (
     req:Request<{}, unknown, Pick<User, 'email' | 'password'>>, 
     res: Response<RegisterResBody | {error: string}>
 ): Promise<void | Response<{error: string}>> => {
@@ -122,5 +123,42 @@ export const loginUser = async(
     } catch (err) {
         console.error('Login error:', err);
         return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+export const refreshToken = async (
+    req: Request<{}, unknown, { refreshToken: string }>,
+    res: Response<{accessToken: string, refreshToken: string} | {error: string}>
+):Promise<void | Response<{error: string}>> => {
+    try {
+        const { refreshToken } = req.body
+
+        if (!refreshToken){
+            return res.status(400).json({error: 'Missing refresh token'})
+        }
+
+        const userId: string | null = await validateRefreshToken(refreshToken)
+
+        if(!userId){
+             return res.status(401).json({ error: 'Invalid refresh token' });
+        }
+
+        const { resource: user } = await usersContainer.item(userId, userId).read<User>()
+        if (!user){
+            return res.status(401).json({ error: 'User not found' });
+        }
+
+        await revokeRefreshToken(refreshToken)
+        const newAccessToken = generateAccessToken(user)
+        const newRefreshToken = generateRefreshToken(user)
+        await storeRefreshToken(user.id, refreshToken)
+
+        res.json({
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken
+        })
+    } catch (err) {
+        console.error('Refresh token error:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 }
