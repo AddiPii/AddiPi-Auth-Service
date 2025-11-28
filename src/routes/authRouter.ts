@@ -9,7 +9,7 @@ authRouter.post('/register', registerUser)
 
 authRouter.post('/login', loginUser)
 
-authRouter.post('/refresh', refreshToken)
+authRouter.patch('/refresh', refreshToken)
 
 authRouter.post('/logout', logoutUser)
 
