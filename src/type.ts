@@ -50,3 +50,9 @@ export type RegisterReqBody = {
     firstName: string, 
     lastName: string
 }
+
+export type RegisterResBody = {
+    user: User,
+    accessToken: string,
+    refreshToken: string
+}

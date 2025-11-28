@@ -1,5 +1,5 @@
 import type { Request, Response } from "express"
-import { RegisterReqBody, User } from "../type"
+import { RegisterReqBody, RegisterResBody, User } from "../type"
 import { usersContainer } from "../services/containers"
 import bcrypt from 'bcryptjs'
 import validator from 'validator'
@@ -8,7 +8,7 @@ import { generateAccessToken, generateRefreshToken, storeRefreshToken } from "..
 
 export const registerUser = async (
     req: Request<{}, unknown, RegisterReqBody>, 
-    res: Response
+    res: Response<RegisterResBody | {error: string}>
 ): Promise<void | Response<{error: string}>> => {
     try {
         let { email, password, firstName, lastName } = req.body
@@ -17,14 +17,14 @@ export const registerUser = async (
             return res.status(400).json({error: 'All fields are required'})
         }
         email = email.toLowerCase().trim()
-        firstName = firstName.trim()
-        lastName = lastName.trim()
+        firstName.trim()
+        lastName.trim()
 
         if(!validator.isEmail(email)){
             return res.status(400).json({error: 'Bad format of e-mail'})
         }
 
-        const emailDomain = email.slice(-11)
+        const emailDomain: string = email.slice(-11)
         
         if(emailDomain != '@uwr.edu.pl'){
             return res.status(400).json({error: 'Only Univeristy of Wroclaw members can use this service'})
@@ -55,11 +55,11 @@ export const registerUser = async (
 
         await usersContainer.items.create(user)
 
-        const accessToken = generateAccessToken(user)
-        const refreshToken = generateRefreshToken(user)
+        const accessToken: string = generateAccessToken(user)
+        const refreshToken: string = generateRefreshToken(user)
         await storeRefreshToken(user.id, refreshToken)
 
-        const { password: _, ...userWithoutPassword } = user
+        const { password: _, ...userWithoutPassword }: User = user
 
         res.status(201).json({
             user: userWithoutPassword,
@@ -71,3 +71,4 @@ export const registerUser = async (
         res.status(500).json({ error: 'Internal server error' });
     }
 }
+
