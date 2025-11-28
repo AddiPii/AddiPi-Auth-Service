@@ -1,11 +1,13 @@
 import type { Request, Response } from "express"
-import { RegisterReqBody, RegisterResBody, User } from "../type"
+import { JWTPayload, RegisterReqBody, RegisterResBody, User } from "../type"
 import { usersContainer } from "../services/containers"
 import bcrypt from 'bcryptjs'
 import validator from 'validator'
 import getLocalISO from "../helpers/getLocalISO"
 import { generateAccessToken, generateRefreshToken, revokeRefreshToken, storeRefreshToken, validateRefreshToken } from "../services/token-service"
 import { ref } from "process"
+import jwt from 'jsonwebtoken'
+import { CONFIG } from "../config/config"
 
 export const registerUser = async (
     req: Request<{}, unknown, RegisterReqBody>, 
@@ -178,5 +180,23 @@ export const logoutUser = async (
     } catch (err) {
         console.error('Logout error:', err);
         res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+export const verifyUser = async (
+    req:Request,
+    res:Response
+) => {
+    try {
+        const token = req.headers.authorization?.replace('Bearer', '')
+
+        if(!token){
+            return res.status(401).json({error: 'Missing token'})
+        }
+
+        const decoded: JWTPayload = jwt.verify(token, CONFIG.JWT_SECRET) as JWTPayload
+        res.json({ valid: true, user: decoded })
+    } catch (err) {
+        res.status(401).json({ error: 'Invalid token' });  
     }
 }
