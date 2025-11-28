@@ -149,8 +149,8 @@ export const refreshToken = async (
         }
 
         await revokeRefreshToken(refreshToken)
-        const newAccessToken = generateAccessToken(user)
-        const newRefreshToken = generateRefreshToken(user)
+        const newAccessToken: string = generateAccessToken(user)
+        const newRefreshToken: string = generateRefreshToken(user)
         await storeRefreshToken(user.id, refreshToken)
 
         res.json({
@@ -163,4 +163,20 @@ export const refreshToken = async (
     }
 }
 
-export const 
+export const logoutUser = async (
+    req: Request<{}, unknown, { refreshToken: string }>,
+    res: Response<{message: string} | {error: string}>
+): Promise<void> => {
+    try {
+        const { refreshToken } = req.body
+
+        if (refreshToken) {
+            await revokeRefreshToken(refreshToken)
+        }
+
+        res.json({message: 'Logged out successfully'})
+    } catch (err) {
+        console.error('Logout error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
