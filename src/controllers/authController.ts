@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs'
 import validator from 'validator'
 import getLocalISO from "../helpers/getLocalISO"
 import { generateAccessToken, generateRefreshToken, revokeRefreshToken, storeRefreshToken, validateRefreshToken } from "../services/token-service"
-import { ref } from "process"
 import jwt from 'jsonwebtoken'
 import { CONFIG } from "../config/config"
 
