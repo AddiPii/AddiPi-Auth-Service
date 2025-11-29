@@ -68,7 +68,7 @@
 			"response": []
 		},
 		{
-			"name": "login Copy",
+			"name": "login",
 			"id": "43410429-9c27472c-ab9d-44ba-ab98-faa2a3ad38bb",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -98,7 +98,7 @@
 			"response": []
 		},
 		{
-			"name": "verify Copy",
+			"name": "verify",
 			"id": "43410429-951a2aed-1062-4b44-8cf0-1f0ed6becda7",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
@@ -125,7 +125,7 @@
 			"response": []
 		},
 		{
-			"name": "refreshToken Copy",
+			"name": "refreshToken",
 			"id": "43410429-16f018f0-3593-412d-adbe-abd960c2b7ff",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
