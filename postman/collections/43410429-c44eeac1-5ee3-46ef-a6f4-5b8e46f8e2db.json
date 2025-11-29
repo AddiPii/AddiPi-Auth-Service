@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "register Copy",
+			"name": "register",
 			"id": "43410429-7004d4d3-b193-43a9-a7c6-a06a1cec8039",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
