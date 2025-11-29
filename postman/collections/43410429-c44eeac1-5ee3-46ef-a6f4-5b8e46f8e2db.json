@@ -1,0 +1,158 @@
+{
+	"info": {
+		"_postman_id": "43410429-c44eeac1-5ee3-46ef-a6f4-5b8e46f8e2db",
+		"name": "AddiPi-Auth Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "register Copy",
+			"id": "43410429-7004d4d3-b193-43a9-a7c6-a06a1cec8039",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"testuser@uwr.edu.pl\",\r\n    \"password\": \"Passw0rd123!\",\r\n    \"firstName\": \"Jan\",\r\n    \"lastName\": \"Kowalski\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{auth_url}}/register",
+					"host": [
+						"{{auth_url}}"
+					],
+					"path": [
+						"register"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "341479@uwr.edu.pl",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "oliwer1234",
+							"disabled": true
+						},
+						{
+							"key": "firstName",
+							"value": "Oliwer",
+							"disabled": true
+						},
+						{
+							"key": "lastName",
+							"value": "Urbaniak",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login Copy",
+			"id": "43410429-9c27472c-ab9d-44ba-ab98-faa2a3ad38bb",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"testuser@uwr.edu.pl\",\r\n    \"password\": \"Passw0rd123!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{auth_url}}/login",
+					"host": [
+						"{{auth_url}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "verify Copy",
+			"id": "43410429-951a2aed-1062-4b44-8cf0-1f0ed6becda7",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyXzE3NjQyOTg0NTczNDAiLCJlbWFpbCI6InRlc3R1c2VyQHV3ci5lZHUucGwiLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDI5OTM1MSwiZXhwIjoxNzY0MzAwMjUxfQ.cBJnCGLCJU403rDGn7kn4n2i7NymBitGagDULv-QfdE",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{auth_url}}/verify",
+					"host": [
+						"{{auth_url}}"
+					],
+					"path": [
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "refreshToken Copy",
+			"id": "43410429-16f018f0-3593-412d-adbe-abd960c2b7ff",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyXzE3NjQyOTg0NTczNDAiLCJpYXQiOjE3NjQyOTg0NTcsImV4cCI6MTc2NDkwMzI1N30.rbT_kp6rfSatPqCdDC84hJq5OU5MeRw9WyFaYklqJQ8\"\r\n    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{auth_url}}/refresh",
+					"host": [
+						"{{auth_url}}"
+					],
+					"path": [
+						"refresh"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
