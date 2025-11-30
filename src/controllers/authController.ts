@@ -187,15 +187,19 @@ export const verifyUser = async (
     res:Response
 ) => {
     try {
-        const token = req.headers.authorization?.replace('Bearer', '')
-
+        let token = req.headers.authorization?.replace('Bearer', '')
+        console.log(token)
         if(!token){
+            console.log('Missing t')
             return res.status(401).json({error: 'Missing token'})
         }
+        token.trim()
 
         const decoded: JWTPayload = jwt.verify(token, CONFIG.JWT_SECRET) as JWTPayload
+        console.log(decoded)
         res.json({ valid: true, user: decoded })
     } catch (err) {
-        res.status(401).json({ error: 'Invalid token' });  
+        console.log('Invalid t')
+        res.status(401).json({ error: 'Invalid token:', err });  
     }
 }
