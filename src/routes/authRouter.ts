@@ -1,6 +1,6 @@
 import express from 'express'
 import type { Router } from 'express'
-import { loginUser, logoutUser, refreshToken, registerUser, verifyUser } from '../controllers/authController'
+import { loginUser, logoutUser, refreshToken, registerUser, verifyEmail, verifyUser } from '../controllers/authController'
 
 
 export const authRouter: Router = express.Router()
@@ -14,3 +14,5 @@ authRouter.patch('/refresh', refreshToken)
 authRouter.post('/logout', logoutUser)
 
 authRouter.post('/verify', verifyUser)
+
+authRouter.get('/verify-email', verifyEmail)
