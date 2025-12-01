@@ -272,3 +272,50 @@ export const verifyEmail = async (
         res.status(500).json({ error: 'Internal server error' })
     }
 }
+
+
+export const resendVerification = async (
+    req: Request,
+    res: Response
+): Promise<void | Response<{error: string}>> => {
+    try{
+        const { email } = req.body
+
+        if(!email){
+            return res.status(400).json({error: 'Email is required'})
+        }
+
+        const query = `SELECT * FROM c WHERE c.email = @email`
+        const { resources } = await usersContainer.items.query({
+            query,
+            parameters: [{name: '@email', value: email.toLowerCase().trim()}]
+        }).fetchAll()
+
+        if (resources.length === 0) {
+            return res.status(404).json({error: 'User not found'})
+        }
+
+        const user: User = resources[0]
+
+        if (user.isVerified) {
+            return res.status(400).json({error: 'Email already verified'});
+        }
+
+        const { verificationToken, verificationTokenExpiry } = genVerificationToken();
+
+        const updatedUser = {
+            ...user,
+            verificationToken,
+            verificationTokenExpiry,
+            updatedAt: getLocalISO()
+        };
+
+        await usersContainer.item(user.id, user.id).replace(updatedUser);
+        await sendVerificationEmail(user.email, verificationToken, user.firstName);
+
+        res.json({ message: 'Verification email sent successfully' });
+    } catch(err){
+        console.error('Resend verification error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
