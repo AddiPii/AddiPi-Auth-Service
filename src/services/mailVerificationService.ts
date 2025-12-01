@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer'
 import { CONFIG } from '../config/config'
+import crypto from 'crypto'
 
 export const sendVerificationEmail = async (
     email: string,
@@ -34,4 +35,14 @@ export const sendVerificationEmail = async (
     }
 
     await transporter.sendMail(mailOptions)
+}
+
+export const genVerificationToken = (
+): {verificationToken: string, verificationTokenExpiry: string} => {
+    const verificationToken: string = crypto.randomBytes(32).toString('hex').trim()
+    const verificationTokenExpiry: string = new Date(
+        Date.now() + 24 * 60 * 60 ^ 1000
+    ).toISOString().trim()
+
+    return { verificationToken, verificationTokenExpiry }
 }
