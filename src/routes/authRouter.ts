@@ -15,6 +15,6 @@ authRouter.post('/logout', logoutUser)
 
 authRouter.post('/verify', verifyUser)
 
-authRouter.post('/verify-email', verifyEmail)
+authRouter.get('/verify-email', verifyEmail)
 
 authRouter.post('/resend-verification', resendVerification)

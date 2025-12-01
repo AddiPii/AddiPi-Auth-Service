@@ -219,7 +219,7 @@ export const verifyUser = async (
 }
 
 export const verifyEmail = async (
-    req: Request<{}, unknown, {}, { token: string }>,
+    req: Request<{}, unknown, { token: string }, { token: string }>,
     res: Response
 ): Promise<void | Response<{error: string}>> => {
     try {
@@ -261,12 +261,14 @@ export const verifyEmail = async (
 
         const { password: _, ...userWithoutPassword } = updatedUser
 
-        res.json({
-            message: 'Email verified successfully',
-            user: userWithoutPassword,
-            accessToken,
-            refreshToken
-        })
+        // res.json({
+        //     message: 'Email verified successfully',
+        //     user: userWithoutPassword,
+        //     accessToken,
+        //     refreshToken
+        // })
+
+        res.redirect(`http://localhost:5173/?verification_success=true&token=${token}`);
     } catch (err) {
         console.error('Verification error:', err)
         res.status(500).json({ error: 'Internal server error' })
