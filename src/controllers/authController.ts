@@ -223,7 +223,7 @@ export const verifyEmail = async (
     res: Response
 ): Promise<void | Response<{error: string}>> => {
     try {
-        const {token} = req.body
+        const { token } = req.body
 
         if(!token){
             res.status(400).json({error: 'Verification token is required'})
