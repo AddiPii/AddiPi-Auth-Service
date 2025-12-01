@@ -20,7 +20,7 @@ export interface configType {
     BCRYPT_SALT_ROUNDS: number,
 }
 
-export type User = {
+export interface User {
     id: string,
     email: string,
     firstName: string,
