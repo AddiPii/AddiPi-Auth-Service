@@ -1,11 +1,13 @@
 import nodemailer from 'nodemailer'
 import { CONFIG } from '../config/config'
 
-const sendVerificationEmail = async (
+export const sendVerificationEmail = async (
     email: string,
     token: string,
     firstName: string
 ): Promise<void> => {
+    console.log(CONFIG.EMAIL_USER)
+    console.log(CONFIG.EMAIL_PASSWORD)
     const transporter: nodemailer.Transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {

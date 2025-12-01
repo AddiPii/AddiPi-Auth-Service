@@ -5,6 +5,7 @@ import cors from 'cors'
 import { CONFIG } from './config/config'
 import { authRouter } from './routes/authRouter'
 
+
 const PORT = CONFIG.PORT
 
 const app: Express = express()
