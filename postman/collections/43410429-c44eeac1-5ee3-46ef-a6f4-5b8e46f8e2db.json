@@ -153,6 +153,18 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "verify-email",
+			"id": "43410429-3f653ca3-2324-4488-a80c-9181e2e84636",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
 		}
 	]
 }
