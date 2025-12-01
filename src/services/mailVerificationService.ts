@@ -1,3 +1,35 @@
-const sendVerificationEmail = async () => {
+import nodemailer from 'nodemailer'
+import { CONFIG } from '../config/config'
 
+const sendVerificationEmail = async (
+    email: string,
+    token: string,
+    firstName: string
+): Promise<void> => {
+    const transporter: nodemailer.Transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: CONFIG.EMAIL_USER,
+            pass: CONFIG.EMAIL_PASSWORD
+        }
+    })
+
+    token.trim()
+
+    const verificationUrl: string = `http://localhost:3001/auth/verify-email?token=${token}`
+
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Verify your email address',
+        html: `
+            <h1>Hello ${firstName}!</h1>
+            <p>Thank you for registering. Please verify your email address by clicking the link below:</p>
+            <a href="${verificationUrl}">Verify Email</a>
+            <p>This link will expire in 24 hours.</p>
+            <p>If you didn't create this account, please ignore this email.</p>
+        `
+    }
+
+    await transporter.sendMail(mailOptions)
 }

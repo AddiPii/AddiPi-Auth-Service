@@ -17,6 +17,8 @@ export const CONFIG: configType = {
     JWT_SECRET: getRequired('JWT_SECRET'),
     COSMOS_ENDPOINT: getRequired('COSMOS_ENDPOINT'),
     COSMOS_KEY: getRequired('COSMOS_KEY'),
+    EMAIL_USER: getRequired('EMAIL_USER'),
+    EMAIL_PASSWORD: getRequired('EMAIL_PASSWORD'),
     PORT: Number(process.env.AUTH_PORT || 3001),
     ACCESS_TOKEN_EXPIRES: process.env.ACCESS_TOKEN_EXPIRES ?? '15m',
     REFRESH_TOKEN_EXPIRES_DAYS,

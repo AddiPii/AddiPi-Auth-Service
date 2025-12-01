@@ -11,6 +11,8 @@ export interface configType {
     JWT_SECRET: string,
     COSMOS_ENDPOINT: string,
     COSMOS_KEY: string,
+    EMAIL_USER: string,
+    EMAIL_PASSWORD: string,
     PORT: number,
     ACCESS_TOKEN_EXPIRES: string,
     REFRESH_TOKEN_EXPIRES_DAYS: number,
