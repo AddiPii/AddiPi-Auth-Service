@@ -219,11 +219,11 @@ export const verifyUser = async (
 }
 
 export const verifyEmail = async (
-    req: Request,
+    req: Request<{}, unknown, {}, { token: string }>,
     res: Response
 ): Promise<void | Response<{error: string}>> => {
     try {
-        const { token } = req.body
+        const { token }: {token: string} = req.query
 
         if(!token){
             res.status(400).json({error: 'Verification token is required'})

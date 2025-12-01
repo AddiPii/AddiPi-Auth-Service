@@ -7,8 +7,6 @@ export const sendVerificationEmail = async (
     token: string,
     firstName: string
 ): Promise<void> => {
-    console.log(CONFIG.EMAIL_USER)
-    console.log(CONFIG.EMAIL_PASSWORD)
     const transporter: nodemailer.Transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -41,7 +39,7 @@ export const genVerificationToken = (
 ): {verificationToken: string, verificationTokenExpiry: string} => {
     const verificationToken: string = crypto.randomBytes(32).toString('hex').trim()
     const verificationTokenExpiry: string = new Date(
-        Date.now() + 24 * 60 * 60 ^ 1000
+        Date.now() + 24 * 60 * 60 * 1000
     ).toISOString().trim()
 
     return { verificationToken, verificationTokenExpiry }
