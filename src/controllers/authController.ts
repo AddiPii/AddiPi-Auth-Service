@@ -1,5 +1,5 @@
 import type { Request, Response } from "express"
-import { JWTPayload, RegisterReqBody, RegisterResBody, User } from "../type"
+import { JWTPayload, LoginResBody, RegisterReqBody, RegisterResBody, User } from "../type"
 import { usersContainer } from "../services/containers"
 import bcrypt from 'bcryptjs'
 import validator from 'validator'
@@ -7,6 +7,8 @@ import getLocalISO from "../helpers/getLocalISO"
 import { generateAccessToken, generateRefreshToken, revokeRefreshToken, storeRefreshToken, validateRefreshToken } from "../services/token-service"
 import jwt from 'jsonwebtoken'
 import { CONFIG } from "../config/config"
+import { error } from "console"
+import { genVerificationToken, sendVerificationEmail } from "../services/mailVerificationService"
 
 export const registerUser = async (
     req: Request<{}, unknown, RegisterReqBody>, 
@@ -44,6 +46,14 @@ export const registerUser = async (
 
         const hashed: string = await bcrypt.hash(password, 10)
 
+        const { 
+            verificationToken, 
+            verificationTokenExpiry
+        }: {
+            verificationToken: string,
+            verificationTokenExpiry: string
+        }= genVerificationToken()
+
         const user: User = {
             id: `user_${Date.now()}`,
             email,
@@ -51,22 +61,22 @@ export const registerUser = async (
             lastName,
             password: hashed,
             role: 'user',
+            isVerified: false,
+            verificationToken,
+            verificationTokenExpiry,
             createdAt: getLocalISO(),
             updatedAt: getLocalISO(),
         }
 
         await usersContainer.items.create(user)
 
-        const accessToken: string = generateAccessToken(user)
-        const refreshToken: string = generateRefreshToken(user)
-        await storeRefreshToken(user.id, refreshToken)
+        await sendVerificationEmail(email, verificationToken, firstName)
 
         const { password: _, ...userWithoutPassword }: User = user
 
         res.status(201).json({
             user: userWithoutPassword,
-            accessToken,
-            refreshToken
+            message: 'Registration successful. Please check your email to verify your account.'
         })
     } catch (err) {
         console.error('Register error:', err);
@@ -76,7 +86,7 @@ export const registerUser = async (
 
 export const loginUser = async (
     req:Request<{}, unknown, Pick<User, 'email' | 'password'>>, 
-    res: Response<RegisterResBody | {error: string}>
+    res: Response<LoginResBody | {error: string}>
 ): Promise<void | Response<{error: string}>> => {
     try {
         let { email, password }: Pick<User, 'email' | 'password'> = req.body
@@ -129,7 +139,7 @@ export const loginUser = async (
 
 export const refreshToken = async (
     req: Request<{}, unknown, { refreshToken: string }>,
-    res: Response<{accessToken: string, refreshToken: string} | {error: string}>
+    res: Response<Omit<LoginResBody, 'user'> | {error: string}>
 ):Promise<void | Response<{error: string}>> => {
     try {
         const { refreshToken } = req.body
@@ -201,5 +211,60 @@ export const verifyUser = async (
     } catch (err) {
         console.log('Invalid t')
         res.status(401).json({ error: 'Invalid token:', err });  
+    }
+}
+
+export const verifyEmail = async (
+    req: Request,
+    res: Response
+): Promise<void | Response<{error: string}>> => {
+    try {
+        const {token} = req.body
+
+        if(!token){
+            res.status(400).json({error: 'Verification token is required'})
+        }
+
+        const query =  `SELECT * FROM c WHERE c.verificationToken = @token`
+        const { resources } = await usersContainer.items.query({
+            query,
+            parameters: [{ name: '@token', value: token }]
+        }).fetchAll()
+
+        if(resources.length === 0){
+            return res.status(400).json({error: 'Invalid verification token'})
+        }
+
+        const user: User = resources[0]
+
+        if(new Date() > new Date(user.verificationTokenExpiry!)) {
+            return res.status(400).json({error: 'Verification token has expired'})
+        }
+
+        const updatedUser: User = {
+            ...user,
+            isVerified: true,
+            verificationToken: undefined,
+            verificationTokenExpiry: undefined,
+            updatedAt: getLocalISO()
+        }
+
+        await usersContainer.item(user.id, user.id).replace(updatedUser)
+
+        const accessToken: string = generateAccessToken(updatedUser)
+        const refreshToken: string = generateRefreshToken(updatedUser)
+        await storeRefreshToken(updatedUser.id, refreshToken)
+
+        const { password: _, ...userWithoutPassword } = updatedUser
+
+        res.json({
+            message: 'Email verified successfully',
+            user: userWithoutPassword,
+            accessToken,
+            refreshToken
+        })
+    } catch (err) {
+        console.error('Verification error:', err)
+        res.status(500).json({ error: 'Internal server error' })
     }
 }

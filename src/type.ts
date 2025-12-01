@@ -27,6 +27,9 @@ export interface User {
     lastName: string,
     password?: string,
     role: "admin" | "user",
+    isVerified: boolean,
+    verificationToken?: string,
+    verificationTokenExpiry?: string,
     createdAt: string,
     updatedAt: string,
     microsoftId?: string
@@ -55,6 +58,12 @@ export type RegisterReqBody = {
 
 export type RegisterResBody = {
     user: User,
+    message: string,
+}
+
+export type LoginResBody = {
+    user: User,
     accessToken: string,
     refreshToken: string
 }
+
