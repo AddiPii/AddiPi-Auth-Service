@@ -19,6 +19,7 @@ export const CONFIG: configType = {
     COSMOS_KEY: getRequired('COSMOS_KEY'),
     EMAIL_USER: getRequired('EMAIL_USER'),
     EMAIL_PASSWORD: getRequired('EMAIL_PASSWORD'),
+    AUTH_SERVICE_URL: process.env.AUTH_SERVICE_URL || 'http://localhost:3001',
     PORT: Number(process.env.AUTH_PORT || 3001),
     ACCESS_TOKEN_EXPIRES: process.env.ACCESS_TOKEN_EXPIRES ?? '15m',
     REFRESH_TOKEN_EXPIRES_DAYS,
