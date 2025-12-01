@@ -161,8 +161,33 @@
 				"disableBodyPruning": true
 			},
 			"request": {
-				"method": "GET",
-				"header": []
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyXzE3NjQyOTg0NTczNDAiLCJlbWFpbCI6InRlc3R1c2VyQHV3ci5lZHUucGwiLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDI5OTM1MSwiZXhwIjoxNzY0MzAwMjUxfQ.cBJnCGLCJU403rDGn7kn4n2i7NymBitGagDULv-QfdE",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3001/auth/verify-email?token=8a7b119046f8382c3c87799d7398f9236bcdb5381968bf4486c07b1a91fbe59a",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"auth",
+						"verify-email"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "8a7b119046f8382c3c87799d7398f9236bcdb5381968bf4486c07b1a91fbe59a"
+						}
+					]
+				}
 			},
 			"response": []
 		}
