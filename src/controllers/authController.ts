@@ -119,6 +119,10 @@ export const loginUser = async (
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
+        if (!user.isVerified){
+            return res.status(403).json({error: 'Please verify your email before logging in'})
+        }
+
         const accessToken: string = generateAccessToken(user)
         const refreshToken: string = generateRefreshToken(user)
         await storeRefreshToken(user.id, refreshToken)
