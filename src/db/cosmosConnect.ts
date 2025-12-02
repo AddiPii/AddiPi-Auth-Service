@@ -1,5 +1,5 @@
 import { CosmosClient } from "@azure/cosmos";
-import type { Container } from "@azure/cosmos";
+import type { Container, Database } from "@azure/cosmos";
 import { containersType } from "../type";
 
 
@@ -16,8 +16,8 @@ export function cosmosConnect(COSMOS_ENDPOINT: string, COSMOS_KEY: string): cont
     let refreshTokensContainer: Container
 
     try {
-        const comsosClient = new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY })
-        const database = comsosClient.database('addipi')
+        const comsosClient: CosmosClient = new CosmosClient({ endpoint: COSMOS_ENDPOINT, key: COSMOS_KEY })
+        const database: Database = comsosClient.database('addipi')
         usersContainer = database.container('users')
         refreshTokensContainer = database.container('refresh-tokens')
     } catch (err) {
