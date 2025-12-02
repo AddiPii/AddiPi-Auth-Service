@@ -201,7 +201,7 @@ export const verifyUser = async (
     res:Response
 ) => {
     try {
-        let token = req.headers.authorization?.replace('Bearer', '')
+        let token = req.headers.authorization?.replace('Bearer ', '')
         console.log(token)
         if(!token){
             console.log('Missing t')
