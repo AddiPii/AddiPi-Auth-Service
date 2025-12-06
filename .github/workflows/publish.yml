@@ -16,8 +16,9 @@ jobs:
             - name: Docker meta
               uses: docker/metadata-action@v5
               with:
-                images: ghcr.io/${{ github.repository_owner }}/addipi/auth-service
-                tags: latest
+                images: addipi/auth-service
+                tags: |
+                  type=raw,value=latest
             
             - name: Login to ghcr
               uses: docker/login-action@v3
