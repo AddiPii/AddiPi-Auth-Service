@@ -268,7 +268,7 @@ export const verifyEmail = async (
         //     refreshToken
         // })
 
-        res.redirect(`http://localhost:5173/?verification_success=true&token=${token}`);
+        res.redirect(`https://addipi.vercel.app/?verification_success=true&token=${token}`);
     } catch (err) {
         console.error('Verification error:', err)
         res.status(500).json({ error: 'Internal server error' })
