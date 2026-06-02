@@ -223,11 +223,18 @@ export const verifyEmail = async (
     res: Response
 ): Promise<void | Response<{error: string}>> => {
     try {
-        const { token }: {token: string} = req.query
+            const tokenFromQuery = (req.query && (req.query as any).token) as string | undefined
+            const tokenFromBody = (req.body && (req.body as any).token) as string | undefined
+            const token: string | undefined = tokenFromQuery || tokenFromBody
 
-        if(!token){
-            res.status(400).json({error: 'Verification token is required'})
-        }
+            if(!token){
+                return res.status(400).json({error: 'Verification token is required'})
+            }
+
+            // Only allow verification through POST to avoid email client prefetch auto-confirming accounts
+            if (req.method !== 'POST') {
+                return res.status(200).json({ message: 'Open the verification page and click the confirm button to verify your email.' });
+            }
 
         const query =  `SELECT * FROM c WHERE c.verificationToken = @token`
         const { resources } = await usersContainer.items.query({
@@ -268,6 +275,7 @@ export const verifyEmail = async (
         //     refreshToken
         // })
 
+        // Redirect back to frontend indicating success. Frontend may handle token if needed.
         res.redirect(`https://addipi.vercel.app/?verification_success=true&token=${token}`);
     } catch (err) {
         console.error('Verification error:', err)
