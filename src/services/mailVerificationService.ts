@@ -18,7 +18,7 @@ export const sendVerificationEmail = async (
     token.trim()
 
     const verificationUrl: string = `
-    ${CONFIG.AUTH_SERVICE_URL}/auth/verify-email?token=${token}`
+    ${CONFIG.FRONTEND_URL}/auth/verify-email?token=${token}`
 
     const mailOptions = {
         from: process.env.EMAIL_USER,

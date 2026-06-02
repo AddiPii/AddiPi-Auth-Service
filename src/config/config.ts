@@ -20,6 +20,7 @@ export const CONFIG: configType = {
     EMAIL_USER: getRequired('EMAIL_USER'),
     EMAIL_PASSWORD: getRequired('EMAIL_PASSWORD'),
     AUTH_SERVICE_URL: process.env.AUTH_SERVICE_URL || 'http://localhost:3001',
+    FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
     PORT: Number(process.env.AUTH_PORT || 3001),
     ACCESS_TOKEN_EXPIRES: process.env.ACCESS_TOKEN_EXPIRES ?? '15m',
     REFRESH_TOKEN_EXPIRES_DAYS,

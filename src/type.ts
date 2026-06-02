@@ -14,6 +14,7 @@ export interface configType {
     EMAIL_USER: string,
     EMAIL_PASSWORD: string,
     AUTH_SERVICE_URL: string,
+    FRONTEND_URL: string,
     PORT: number,
     ACCESS_TOKEN_EXPIRES: string,
     REFRESH_TOKEN_EXPIRES_DAYS: number,
