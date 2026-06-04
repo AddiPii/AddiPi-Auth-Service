@@ -11,6 +11,8 @@ const PORT = CONFIG.PORT
 
 const ALLOWED_ORIGINS: allowedOriginsType = [
     CONFIG.FRONTEND_URL,
+    'https://addipi-git-development-oliwers-projects-d5e8db11.vercel.app',
+    'https://addipi-git-test-oliwers-projects-d5e8db11.vercel.app',
     'http://localhost:5173'
 ]
 
