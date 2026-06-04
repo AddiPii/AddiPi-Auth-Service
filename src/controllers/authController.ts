@@ -1,5 +1,5 @@
-import type { Request, Response } from "express"
-import { JWTPayload, LoginResBody, RegisterReqBody, RegisterResBody, User } from "../type"
+import type { CookieOptions, Request, Response } from "express"
+import { JWTPayload, LoginResBody, RefreshResBody, RegisterReqBody, RegisterResBody, User } from "../type"
 import { usersContainer } from "../services/containers"
 import bcrypt from 'bcryptjs'
 import validator from 'validator'
@@ -7,8 +7,41 @@ import getLocalISO from "../helpers/getLocalISO"
 import { generateAccessToken, generateRefreshToken, revokeRefreshToken, storeRefreshToken, validateRefreshToken } from "../services/token-service"
 import jwt from 'jsonwebtoken'
 import { CONFIG } from "../config/config"
-import { error } from "console"
 import { genVerificationToken, sendVerificationEmail } from "../services/mailVerificationService"
+
+const REFRESH_TOKEN_COOKIE_NAME = 'refreshToken'
+const IS_PRODUCTION = process.env.NODE_ENV === 'production'
+const REFRESH_TOKEN_COOKIE_MAX_AGE = (CONFIG.REFRESH_TOKEN_TTL_SECONDS ?? 7 * 24 * 60 * 60) * 1000
+
+const refreshTokenCookieOptions: CookieOptions = {
+    httpOnly: true,
+    secure: IS_PRODUCTION,
+    sameSite: IS_PRODUCTION ? 'none' : 'lax',
+    path: '/auth',
+    maxAge: REFRESH_TOKEN_COOKIE_MAX_AGE,
+}
+
+const parseCookies = (cookieHeader?: string): Record<string, string> => {
+    if (!cookieHeader) {
+        return {}
+    }
+
+    return cookieHeader.split(';').reduce<Record<string, string>>((cookies, part) => {
+        const [rawKey, ...rawValue] = part.split('=')
+        const key = rawKey.trim()
+
+        if (!key) {
+            return cookies
+        }
+
+        cookies[key] = decodeURIComponent(rawValue.join('=').trim())
+        return cookies
+    }, {})
+}
+
+const getRefreshTokenFromRequest = (req: Request): string | undefined => {
+    return parseCookies(req.headers.cookie)[REFRESH_TOKEN_COOKIE_NAME]
+}
 
 export const registerUser = async (
     req: Request<{}, unknown, RegisterReqBody>, 
@@ -129,10 +162,11 @@ export const loginUser = async (
 
         const { password: _, ...userWithoutPassword }: User = user
 
+        res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, refreshTokenCookieOptions)
+
         res.json({
             user: userWithoutPassword,
-            accessToken,
-            refreshToken
+            accessToken
         })
 
     } catch (err) {
@@ -142,11 +176,11 @@ export const loginUser = async (
 }
 
 export const refreshToken = async (
-    req: Request<{}, unknown, { refreshToken: string }>,
-    res: Response<Omit<LoginResBody, 'user'> | {error: string}>
+    req: Request,
+    res: Response<RefreshResBody | {error: string}>
 ):Promise<void | Response<{error: string}>> => {
     try {
-        const { refreshToken } = req.body
+        const refreshToken = getRefreshTokenFromRequest(req)
 
         if (!refreshToken){
             return res.status(400).json({error: 'Missing refresh token'})
@@ -166,11 +200,12 @@ export const refreshToken = async (
         await revokeRefreshToken(refreshToken)
         const newAccessToken: string = generateAccessToken(user)
         const newRefreshToken: string = generateRefreshToken(user)
-        await storeRefreshToken(user.id, refreshToken)
+        await storeRefreshToken(user.id, newRefreshToken)
+
+        res.cookie(REFRESH_TOKEN_COOKIE_NAME, newRefreshToken, refreshTokenCookieOptions)
 
         res.json({
-            accessToken: newAccessToken,
-            refreshToken: newRefreshToken
+            accessToken: newAccessToken
         })
     } catch (err) {
         console.error('Refresh token error:', err);
@@ -179,16 +214,17 @@ export const refreshToken = async (
 }
 
 export const logoutUser = async (
-    req: Request<{}, unknown, { refreshToken: string }>,
+    req: Request,
     res: Response<{message: string} | {error: string}>
 ): Promise<void> => {
     try {
-        const { refreshToken } = req.body
+        const refreshToken = getRefreshTokenFromRequest(req)
 
         if (refreshToken) {
             await revokeRefreshToken(refreshToken)
         }
 
+        res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, refreshTokenCookieOptions)
         res.json({message: 'Logged out successfully'})
     } catch (err) {
         console.error('Logout error:', err);

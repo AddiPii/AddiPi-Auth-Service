@@ -65,8 +65,11 @@ export type RegisterResBody = {
 
 export type LoginResBody = {
     user: User,
-    accessToken: string,
-    refreshToken: string
+    accessToken: string
+}
+
+export type RefreshResBody = {
+    accessToken: string
 }
 
 export type allowedOriginsType = string[] | string
