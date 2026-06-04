@@ -1,12 +1,18 @@
 //AddiPi-Auth-Service
 import express from 'express'
 import type { Express, Request, Response } from 'express'
+import type { allowedOriginsType } from './type'
 import cors from 'cors'
 import { CONFIG } from './config/config'
 import { authRouter } from './routes/authRouter'
 
 
 const PORT = CONFIG.PORT
+
+const ALLOWED_ORIGINS: allowedOriginsType = [
+    CONFIG.FRONTEND_URL,
+    'http://localhost:5173'
+]
 
 const app: Express = express()
 
@@ -18,7 +24,16 @@ app.use(express.json())
 
 app.use(express.urlencoded({ extended: true }))
 
-app.use(cors())
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    },
+    credentials: true
+}))
 
 app.use('/auth', authRouter)
 
