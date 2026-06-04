@@ -69,3 +69,4 @@ export type LoginResBody = {
     refreshToken: string
 }
 
+export type allowedOriginsType = string[] | string
