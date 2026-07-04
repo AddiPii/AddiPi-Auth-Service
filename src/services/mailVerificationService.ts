@@ -28,7 +28,7 @@ export const sendVerificationEmail = async (
             <h1>Hello ${firstName}!</h1>
             <p>Thank you for registering. Please verify your email address by clicking the link below:</p>
             <a href="${verificationUrl}">Verify Email</a>
-            <p>This link will expire in 24 hours.</p>
+            <p>This link will expire in 7 days.</p>
             <p>If you didn't create this account, please ignore this email.</p>
         `
     }
@@ -40,7 +40,7 @@ export const genVerificationToken = (
 ): {verificationToken: string, verificationTokenExpiry: string} => {
     const verificationToken: string = crypto.randomBytes(32).toString('hex').trim()
     const verificationTokenExpiry: string = new Date(
-        Date.now() + 24 * 60 * 60 * 1000
+        Date.now() + 7 * 24 * 60 * 60 * 1000
     ).toISOString().trim()
 
     return { verificationToken, verificationTokenExpiry }
